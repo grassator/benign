@@ -1,6 +1,6 @@
 {
   "name": "benign",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Provides a proxy-based benign object that can be used as a stub anywhere",
   "main": "dist/common.js",
   "module": "dist/index.js",
@@ -12,7 +12,10 @@
     "test": "mocha -r ts-node/register src/**/*.test.ts"
   },
   "keywords": [
-    "typescript"
+    "typescript",
+    "proxy",
+    "mock",
+    "stub"
   ],
   "files": [
     "dist/*"
