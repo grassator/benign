@@ -1,6 +1,6 @@
 {
   "name": "benign",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Provides a proxy-based benign object that can be used as a stub anywhere",
   "main": "dist/common.js",
   "module": "dist/index.js",
@@ -18,7 +18,8 @@
     "stub"
   ],
   "files": [
-    "dist/*"
+    "dist/*",
+    "README.md"
   ],
   "repository": "git@github.com:grassator/benign.git",
   "author": "Dmitriy Kubyshkin <dmitriy@kubyshkin.name>",
