@@ -1,0 +1,36 @@
+{
+  "name": "benign",
+  "version": "0.0.1",
+  "description": "Provides a proxy-based benign object that can be used as a stub anywhere",
+  "main": "dist/common.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prepublishOnly": "npm test && npm run build",
+    "build": "tsc -m es2015 &&  babel ./dist/index.js -o ./dist/common.js -s",
+    "lint": "tslint --project .",
+    "test": "mocha -r ts-node/register src/**/*.test.ts"
+  },
+  "keywords": [
+    "typescript"
+  ],
+  "files": [
+    "dist/*"
+  ],
+  "repository": "git@github.com:grassator/benign.git",
+  "author": "Dmitriy Kubyshkin <dmitriy@kubyshkin.name>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/mocha": "^5.0.0",
+    "@types/node": "^8.0.53",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "mocha": "^5.0.5",
+    "prettier": "^1.11.1",
+    "ts-node": "^5.0.1",
+    "tslint": "^5.9.1",
+    "tslint-config-prettier": "^1.10.0",
+    "tslint-plugin-prettier": "^1.3.0",
+    "typescript": "^2.8.1"
+  }
+}
