@@ -1,8 +1,8 @@
 {
   "name": "benign",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Provides a proxy-based benign object that can be used as a stub anywhere",
-  "main": "dist/common.js",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "prepublishOnly": "npm test && npm run build",
