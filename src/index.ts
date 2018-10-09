@@ -7,7 +7,6 @@ class BenignConstructor {
 export const benign = <T = any>(): T => {
   const proxy: any = new Proxy(BenignConstructor, {
     getPrototypeOf() {
-      // TODO return itself the 1st time, but BenignConstructor on a 2nd attempt
       return BenignConstructor;
     },
     setPrototypeOf() {
@@ -19,7 +18,10 @@ export const benign = <T = any>(): T => {
     preventExtensions() {
       return true;
     },
-    getOwnPropertyDescriptor() {
+    getOwnPropertyDescriptor(obj, name) {
+      if (name === "prototype") {
+        return Reflect.getOwnPropertyDescriptor(BenignConstructor, name);
+      }
       return {
         configurable: true,
         writable: true,

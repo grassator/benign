@@ -45,4 +45,11 @@ describe("benign", () => {
     const b = benign();
     assert({} instanceof b);
   });
+  it("should give a valid prototype", () => {
+    const b = benign();
+    assert.strictEqual(
+      Object.prototype.toString.call(Object.getPrototypeOf(b)),
+      "[object Function]"
+    );
+  });
 });
