@@ -1,4 +1,5 @@
 import * as assert from "assert";
+import * as util from "util";
 import { Benign, benign, PROPERTY_PROXY } from "./index";
 
 describe("benign", () => {
@@ -6,6 +7,10 @@ describe("benign", () => {
     it("should return itself as a constructed object", () => {
       const Class = benign();
       assert.strictEqual(new Class(), Class);
+    });
+    it("should be inspectable", () => {
+      const Class = benign();
+      assert.strictEqual(util.inspect(Class), "[object Benign]");
     });
     it("should return itself when called as a function", () => {
       const fn = benign();

@@ -4,14 +4,49 @@ export const PROPERTY_PATH = Symbol("Benign Proxy Path");
 export abstract class BenignConstructor {
   private constructor() {}
   private static readonly [PROPERTY_PROXY]: any;
-  private static readonly [PROPERTY_PATH]: string[];
+  private static readonly [PROPERTY_PATH]: PropertyKey[];
 }
 
 export type Benign = typeof BenignConstructor;
 
+let INSPECT_PROP: PropertyKey = "inspect";
+
+// This funky piece of code checks if implementation
+// of `console.log` uses custom symbol to check if
+// target object has a special inspection code
+try {
+  console.log(
+    new Proxy(
+      {},
+      {
+        get(obj, prop) {
+          if (typeof prop === "symbol") {
+            INSPECT_PROP = prop;
+          }
+          throw Error();
+        }
+      }
+    )
+  );
+} catch (e) {
+  // noop
+}
+
+function formatPath(path: PropertyKey[]): string {
+  if (path.length === 0) {
+    return "";
+  }
+  return (
+    "." +
+    path
+      .map(item => (typeof item === "symbol" ? item.toString() : String(item)))
+      .join(".")
+  );
+}
+
 const handler: ProxyHandler<Benign> = {
   getPrototypeOf(obj) {
-    return obj[PROPERTY_PROXY];
+    return obj;
   },
   setPrototypeOf() {
     return true;
@@ -22,19 +57,30 @@ const handler: ProxyHandler<Benign> = {
   preventExtensions() {
     return true;
   },
-  getOwnPropertyDescriptor(obj) {
+  getOwnPropertyDescriptor(obj, prop) {
+    const realProp = Reflect.getOwnPropertyDescriptor(obj, prop);
+    if (realProp) {
+      return realProp;
+    }
     return {
       configurable: true,
       writable: true,
       enumerable: true,
-      value: obj[PROPERTY_PROXY]
+      value: Reflect.get(obj, PROPERTY_PROXY)
     };
   },
   has() {
     return true;
   },
-  get(obj) {
-    return obj[PROPERTY_PROXY];
+  get(obj, prop) {
+    if (prop === INSPECT_PROP) {
+      return () =>
+        `[object Benign${formatPath(Reflect.get(obj, PROPERTY_PATH))}]`;
+    }
+    if (prop === PROPERTY_PATH || prop === "prototype") {
+      return Reflect.get(obj, prop);
+    }
+    return Reflect.get(obj, PROPERTY_PROXY);
   },
   set() {
     return true;
@@ -54,19 +100,19 @@ const handler: ProxyHandler<Benign> = {
     return ["prototype"];
   },
   apply(obj) {
-    return obj[PROPERTY_PROXY];
+    return Reflect.get(obj, PROPERTY_PROXY);
   },
   construct(obj) {
-    return obj[PROPERTY_PROXY];
+    return Reflect.get(obj, PROPERTY_PROXY);
   }
 };
 
-const benignInternal = (path: string[]): any => {
+const benignInternal = (path: PropertyKey[]): any => {
   class BenignConstructor {
-    static [Symbol.hasInstance]() {
-      return true;
+    private [Symbol.toPrimitive]() {
+      return "benign";
     }
-    private static readonly [PROPERTY_PATH]: string[] = path;
+    private static readonly [PROPERTY_PATH]: PropertyKey[] = path;
     private static readonly [PROPERTY_PROXY]: any = new Proxy(
       BenignConstructor,
       handler as any
