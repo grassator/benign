@@ -1,13 +1,16 @@
 import * as assert from "assert";
 import * as util from "util";
-import { Benign, benign, PROPERTY_PROXY } from "./index";
+import { Benign, benign, PROPERTY_PATH, PROPERTY_PROXY } from "./index";
+
+function assertIsBenign(value: any): value is Benign {
+  if (!(PROPERTY_PATH in value)) {
+    throw Error(`Expected ${value} to be Benign`);
+  }
+  return true;
+}
 
 describe("benign", () => {
   describe("base functionality", () => {
-    it("should return itself as a constructed object", () => {
-      const Class = benign();
-      assert.strictEqual(new Class(), Class);
-    });
     it("should allow inspection", () => {
       const b = benign();
       assert.strictEqual(util.inspect(b), "[object Benign]");
@@ -35,22 +38,26 @@ describe("benign", () => {
         "[object Function]"
       );
     });
+    it("should return itself as a constructed object", () => {
+      const Class = benign();
+      assertIsBenign(new Class());
+    });
     it("should return itself when called as a function", () => {
       const fn = benign();
-      assert.strictEqual(fn(), fn);
+      assertIsBenign(fn());
     });
     it("should return itself when calling a method", () => {
       const b = benign();
-      assert.strictEqual(b.foo(), b);
+      assertIsBenign(b.foo());
     });
     it("should return itself when accessing a property", () => {
       const b = benign();
-      assert.strictEqual(b.foo, b);
+      assertIsBenign(b.foo);
     });
     it("should allow to set a property but not actually do it", () => {
       const b = benign();
       b.foo = "foo";
-      assert.strictEqual(b.foo, b);
+      assertIsBenign(b.foo);
     });
     it("should report that it has any property", () => {
       const b = benign();
@@ -70,7 +77,7 @@ describe("benign", () => {
       Object.defineProperty(b, "foo", {
         value: "bar"
       });
-      assert.strictEqual(b.foo, b);
+      assertIsBenign(b.foo);
     });
     it("should report that everything is an instance of benign()", () => {
       const b = benign();

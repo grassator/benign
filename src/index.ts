@@ -90,7 +90,11 @@ const handler: ProxyHandler<Benign> = {
     if (prop === Symbol.toPrimitive || prop === "toString") {
       return benignToPrimitive;
     }
-    if (prop === PROPERTY_PATH || prop === "prototype") {
+    if (
+      prop === PROPERTY_PATH ||
+      prop === PROPERTY_PROXY ||
+      prop === "prototype"
+    ) {
       return Reflect.get(obj, prop);
     }
     return Reflect.get(obj, PROPERTY_PROXY);
