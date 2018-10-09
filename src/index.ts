@@ -87,7 +87,7 @@ const handler: ProxyHandler<Benign> = {
     if (prop === INSPECT_PROP) {
       return benignInspect;
     }
-    if (prop === Symbol.toPrimitive) {
+    if (prop === Symbol.toPrimitive || prop === "toString") {
       return benignToPrimitive;
     }
     if (prop === PROPERTY_PATH || prop === "prototype") {

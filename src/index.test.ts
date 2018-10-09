@@ -16,6 +16,10 @@ describe("benign", () => {
       const b = benign();
       assert.strictEqual(String(b), "[object Benign]");
     });
+    it("should allow calling toString()", () => {
+      const b = benign();
+      assert.strictEqual(b.toString(), "[object Benign]");
+    });
     it("should allow being converted to a number", () => {
       const b = benign();
       assert.strictEqual(Number(b), 1);
