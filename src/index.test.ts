@@ -8,9 +8,28 @@ describe("benign", () => {
       const Class = benign();
       assert.strictEqual(new Class(), Class);
     });
-    it("should be inspectable", () => {
-      const Class = benign();
-      assert.strictEqual(util.inspect(Class), "[object Benign]");
+    it("should allow inspection", () => {
+      const b = benign();
+      assert.strictEqual(util.inspect(b), "[object Benign]");
+    });
+    it("should allow being converted to string", () => {
+      const b = benign();
+      assert.strictEqual(String(b), "[object Benign]");
+    });
+    it("should allow being converted to a number", () => {
+      const b = benign();
+      assert.strictEqual(Number(b), 1);
+    });
+    it("should allow being converted to a default primitive", () => {
+      const b = benign();
+      assert.strictEqual(b + "", "[object Benign]");
+    });
+    it("should be convertible to string by Object.prototype.toString", () => {
+      const b = benign();
+      assert.strictEqual(
+        Object.prototype.toString.call(b),
+        "[object Function]"
+      );
     });
     it("should return itself when called as a function", () => {
       const fn = benign();

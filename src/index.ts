@@ -44,6 +44,17 @@ function formatPath(path: PropertyKey[]): string {
   );
 }
 
+function benignInspect(this: Benign) {
+  return `[object Benign${formatPath(Reflect.get(this, PROPERTY_PATH))}]`;
+}
+
+function benignToPrimitive(hint: "string" | "number" | "default") {
+  if (hint === "number") {
+    return 1;
+  }
+  return `[object Benign]`;
+}
+
 const handler: ProxyHandler<Benign> = {
   getPrototypeOf(obj) {
     return obj;
@@ -74,8 +85,10 @@ const handler: ProxyHandler<Benign> = {
   },
   get(obj, prop) {
     if (prop === INSPECT_PROP) {
-      return () =>
-        `[object Benign${formatPath(Reflect.get(obj, PROPERTY_PATH))}]`;
+      return benignInspect;
+    }
+    if (prop === Symbol.toPrimitive) {
+      return benignToPrimitive;
     }
     if (prop === PROPERTY_PATH || prop === "prototype") {
       return Reflect.get(obj, prop);
