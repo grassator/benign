@@ -1,8 +1,17 @@
-const ProxySymbol = Symbol("Benign Proxy");
+export const PROPERTY_PROXY = Symbol("Benign Proxy");
+export const PROPERTY_PATH = Symbol("Benign Proxy Path");
 
-const handler: ProxyHandler<{ [ProxySymbol]: any }> = {
+export abstract class BenignConstructor {
+  private constructor() {}
+  private static readonly [PROPERTY_PROXY]: any;
+  private static readonly [PROPERTY_PATH]: string[];
+}
+
+export type Benign = typeof BenignConstructor;
+
+const handler: ProxyHandler<Benign> = {
   getPrototypeOf(obj) {
-    return obj[ProxySymbol];
+    return obj[PROPERTY_PROXY];
   },
   setPrototypeOf() {
     return true;
@@ -18,14 +27,14 @@ const handler: ProxyHandler<{ [ProxySymbol]: any }> = {
       configurable: true,
       writable: true,
       enumerable: true,
-      value: obj[ProxySymbol]
+      value: obj[PROPERTY_PROXY]
     };
   },
   has() {
     return true;
   },
   get(obj) {
-    return obj[ProxySymbol];
+    return obj[PROPERTY_PROXY];
   },
   set() {
     return true;
@@ -45,20 +54,25 @@ const handler: ProxyHandler<{ [ProxySymbol]: any }> = {
     return ["prototype"];
   },
   apply(obj) {
-    return obj[ProxySymbol];
+    return obj[PROPERTY_PROXY];
   },
   construct(obj) {
-    return obj[ProxySymbol];
+    return obj[PROPERTY_PROXY];
   }
 };
 
-export const benign = <T = any>(): T => {
-  const base = class BenignConstructor {
+const benignInternal = (path: string[]): any => {
+  class BenignConstructor {
     static [Symbol.hasInstance]() {
       return true;
     }
-    static [ProxySymbol]: any;
-  };
-  base[ProxySymbol] = new Proxy(base, handler);
-  return base[ProxySymbol] as any;
+    private static readonly [PROPERTY_PATH]: string[] = path;
+    private static readonly [PROPERTY_PROXY]: any = new Proxy(
+      BenignConstructor,
+      handler as any
+    );
+  }
+  return BenignConstructor[PROPERTY_PROXY] as any;
 };
+
+export const benign = <T = any>(): T & Benign => benignInternal([]);

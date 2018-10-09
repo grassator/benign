@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { benign } from "./index";
+import { Benign, benign, PROPERTY_PROXY } from "./index";
 
 describe("benign", () => {
   describe("base functionality", () => {
@@ -54,6 +54,12 @@ describe("benign", () => {
         Object.prototype.toString.call(Object.getPrototypeOf(b)),
         "[object Function]"
       );
+    });
+  });
+  describe("external API", () => {
+    it("should expose itself under a symbol property", () => {
+      const b: Benign = benign();
+      assert.strictEqual(b[PROPERTY_PROXY], b);
     });
   });
 });
